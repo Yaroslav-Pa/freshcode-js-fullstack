@@ -5,7 +5,7 @@ import ChatItem from './ChatItem';
 function ChatList({ chats = [], ...rest }) {
   return (
     <section className={styles.chatList}>
-      {chats.length && (
+      {chats?.length && (
         <ul>
           {chats.map((c) => (
             <ChatItem chat={c} {...rest} />

@@ -3,25 +3,36 @@ import React from 'react';
 import { getChat } from '../../../api';
 import styles from './ChatItem.module.scss';
 import ChatLogo from '../../ChatLogo';
-
-const clickHandler = (setChat, chatId) => {
-  getChat(chatId).then((res) => setChat(res.data.data));
-};
+import { getActiveChat } from '../../../redux/slices/chatsSlice';
+import { useDispatch } from 'react-redux';
 
 function ChatItem({
   chat: { _id, isPrivate, name, messages, coverImage: imgUrl },
   chatId,
-  setChat
 }) {
+  const dispatch = useDispatch();
   const lastMsg = messages.slice(-1)[0];
-  const { author: { firstName, lastName }, text } = lastMsg || { author: {}};
+  const {
+    author: { firstName, lastName },
+    text,
+  } = lastMsg || { author: {} };
 
   const chatItemStyle = classNames(styles.chatItem, {
     [styles.active]: _id === chatId,
   });
 
+  const clickHandler = () => {
+    dispatch(getActiveChat(_id));
+  };
+
   return (
-    <li key={_id} className={chatItemStyle} onClick={() => clickHandler(setChat, _id)}>
+    <li
+      key={_id}
+      className={chatItemStyle}
+      onClick={() => {
+        clickHandler();
+      }}
+    >
       <section className={styles.chatInfo}>
         <ChatLogo chat={{ name, imgUrl }} />
         <div>

@@ -1,28 +1,31 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header';
-import UserContext from '../../contexts/userContext';
 import ChatList from '../../components/ChatList';
-import { getChats } from '../../api';
 import ChatArea from '../../components/ChatArea';
 import styles from './Chats.module.scss';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { getActiveChat, getChats } from '../../redux/slices/chatsSlice';
 function ChatsPage() {
-  const [
-    {
-      user: { _id: userId },
-    },
-    dispatch,
-  ] = useContext(UserContext);
+  // const [
+  //   {
+  //     user: { _id: userId },
+  //   },
+  //   dispatch,
+  // ] = useContext(UserContext);
 
-  const [chats, setChats] = useState([]);
-  const [chat, setChat] = useState();
+  // const [chats, setChats] = useState([]);
+  // const [chat, setChat] = useState();
   // const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState(null);
 
+  const { allChats, activeChat, user } = useSelector((state) => ({
+    ...state.chats,
+    user: state.user.user,
+  }));
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    getChats(userId).then((res) => {
-      setChats(res.data.data);
-    });
+    dispatch(getChats(user._id));
   }, []);
 
   return (
@@ -31,10 +34,10 @@ function ChatsPage() {
       <div className={styles.asideMainWrapper}>
         <aside className={styles.chatListWrapper}>
           {/* <button>Add Chat</button> */}
-          <ChatList chats={chats} chatId={chat?._id} setChat={setChat} />
+          <ChatList chats={allChats} chatId={activeChat?._id} />
         </aside>
         <main className={styles.chatAreaWrapper}>
-          <ChatArea chat={chat} userId={userId} />
+          <ChatArea chat={activeChat} userId={user._id} />
         </main>
       </div>
     </>
